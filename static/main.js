@@ -136,7 +136,8 @@ function main() {
         currency: "USD",
         amount: 300
       },
-      convertMoney)
+      () => {console.log("Stop for now.")}
+      )
     )
   );
   
