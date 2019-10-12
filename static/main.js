@@ -2,12 +2,12 @@
 
 function exchangeRate() {
   return ApiConnector.getStocks((err, data) => {
-      if (err) {
-        console.log('Error during getting exchange rates');
-      } else {
-        console.log(`Exchange rates downloaded`);
-      }
-    })
+    if (err) {
+      console.log('Error during getting exchange rates');
+    } else {
+      console.log(`Exchange rates downloaded`);
+    }
+  })
 }
 
 
@@ -97,9 +97,9 @@ class Profile {
 
   transferMoney({ to, amount }, callback) {
     return ApiConnector.transferMoney(
-      { 
-        to, 
-        amount 
+      {
+        to,
+        amount
       },
       (err, data) => {
         if (err) {
@@ -113,7 +113,7 @@ class Profile {
     )
   }
 
-  
+
 
 }
 
@@ -129,19 +129,34 @@ function main() {
     },
     password: 'beer',
   });
+
+  const spiderman = new Profile(
+    {
+      username: 'spiderman',
+      name: {
+        firstName: 'Peter',
+        lastName: 'Parker'
+      },
+      password: 'maryjane'
+    }
+  )
+
+
   
-  wolverine.addUser(
-    wolverine.login(
+  wolverine.addUser(() => {
+    wolverine.login(() => {
       wolverine.addMoney({
         currency: "USD",
         amount: 300
       },
-      () => {console.log("Stop for now.")}
+        () => { console.log("Stop") }
       )
+    }
     )
-  );
-  
+  });
+
+
 }
 
-main();
+
 
