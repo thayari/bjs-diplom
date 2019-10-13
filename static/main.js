@@ -1,11 +1,12 @@
-"strict use";
+'use strict';
 
-function exchangeRate() {
+function exchangeRate(callback) {
   return ApiConnector.getStocks((err, data) => {
     if (err) {
-      console.log('Error during getting exchange rates');
+      console.error('Error during getting exchange rates');
     } else {
       console.log(`Exchange rates downloaded`);
+      callback(err, data);
     }
   })
 }
@@ -34,9 +35,9 @@ class Profile {
       },
       (err, data) => {
         if (err) {
-          console.log('Creating user error');
+          console.error('Creating user error');
         } else {
-          console.log(`Creating new user ${username}`);
+          console.log(`New user ${username} created`);
           callback(err, data);
         }
       })
@@ -52,9 +53,9 @@ class Profile {
       },
       (err, data) => {
         if (err) {
-          console.log('Login error');
+          console.error('Login error');
         } else {
-          console.log(`Performing login: ${username}`);
+          console.log(`Login performed: ${username}`);
           callback(err, data);
         }
       })
@@ -68,9 +69,9 @@ class Profile {
       },
       (err, data) => {
         if (err) {
-          console.log('Error during adding money');
+          console.error('Error during adding money');
         } else {
-          console.log(`Adding ${amount} of ${currency} to ${this.username}`);
+          console.log(`${amount} ${currency} added to ${this.username}`);
           callback(err, data);
         }
       })
@@ -87,9 +88,9 @@ class Profile {
       },
       (err, data) => {
         if (err) {
-          console.log('Error during converting money');
+          console.error('Error during converting money');
         } else {
-          console.log(`Converting ${fromCurrency} to ${targetAmount} ${targetCurrency}`);
+          console.log(`Converted ${fromCurrency} to ${targetAmount} ${targetCurrency}`);
           callback(err, data);
         }
       })
@@ -103,9 +104,9 @@ class Profile {
       },
       (err, data) => {
         if (err) {
-          console.log('Error during transfering money');
+          console.error('Error during transfering money');
         } else {
-          console.log(`Transfering ${amount} Netcoins to ${to}`);
+          console.log(`${amount} Netcoins were transfered to ${to}`);
 
           callback(err, data);
         }
@@ -142,14 +143,34 @@ function main() {
   )
 
 
-  
+
   wolverine.addUser(() => {
     wolverine.login(() => {
+      console.log(`Adding money to ${wolverine.username}...`);
       wolverine.addMoney({
-        currency: "USD",
-        amount: 300
+        currency: 'USD',
+        amount: 30000
       },
-        () => { console.log("Stop") }
+        () => {
+          console.log(`Converting to Netcoins...`);
+          exchangeRate((err, data) => {
+            let sum = 30000 * Number(data[99].USD_NETCOIN);
+            wolverine.convertMoney({
+              fromCurrency: 'USD',
+              targetCurrency: 'NETCOIN',
+              targetAmount: sum
+            },
+              () => {
+                console.log('Transfering money...');
+                spiderman.addUser(() => {
+                  wolverine.transferMoney({
+                    to: spiderman.username,
+                    amount: sum
+                  }, () => console.log('Transaction complete.'))
+                })
+              })
+          });
+        }
       )
     }
     )
